@@ -114,6 +114,7 @@ def register():
             #     flash("This email is logged in already please login")
             #     return redirect(url_for("login"))
         else:
+            flash("Welcome To our Blog")
             db.session.add(new_user)
             db.session.commit()
             login_user(new_user)
@@ -176,7 +177,7 @@ def contact():
 
 
 @app.route("/new-post", methods=["POST","GET"])
-@admin_only
+# @admin_only
 def add_new_post():
     form = CreatePostForm()
     if form.validate_on_submit():
@@ -218,12 +219,21 @@ def edit_post(post_id):
 
 
 @app.route("/delete/<int:post_id>")
+@admin_only
 def delete_post(post_id):
     post_to_delete = BlogPost.query.get(post_id)
     db.session.delete(post_to_delete)
     db.session.commit()
     return redirect(url_for('get_all_posts',logged_in=current_user.is_authenticated))
 
+
+@app.route('/delete-comment/<int:comment_id>')
+@admin_only
+def delete_comment(comment_id):
+    comment_to_delete = Comment.query.get(comment_id)
+    db.session.delete(comment_to_delete)
+    db.session.commit()
+    return redirect(url_for('get_all_posts',logged_in=current_user.is_authenticated))
 
 if __name__ == "__main__":
     app.run(debug=True,host='127.0.0.1',port=4000)
